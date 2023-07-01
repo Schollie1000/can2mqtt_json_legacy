@@ -1,0 +1,367 @@
+{
+    "can2mqtt": [
+        {
+            "topic": "error/emergency",
+            "canid": "0x1",
+            "length": 8,
+            "payload": [
+                {
+                    "key":"error",
+                    "type": "error",
+                    "place": [
+                        0,
+                        0
+                    ],
+                    "factor": 1
+
+                }
+            ]
+        },
+        {
+            "topic": "clock",
+            "canid": "0x5",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "unixtime",
+                    "type": "unixtime",
+                    "place": [
+                        0,
+                        0
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        },
+        {
+            "topic": "motor/data",
+            "canid": "0x63",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "torque",
+                    "type": "int16_t",
+                    "place": [
+                        0,
+                        2
+                    ],
+                    "factor": 0.001666
+                },
+                {
+                    "key": "rpm",
+                    "type": "int16_t",
+                    "place": [
+                        2,
+                        4
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "t",
+                    "type": "float",
+                    "place": [
+                        4,
+                        8
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        },
+	{
+            "topic": "zachse/data",
+            "canid": "0x73",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "steps",
+                    "type": "int32_t",
+                    "place": [
+                        0,
+                        4
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "delta",
+                    "type": "int32_t",
+                    "place": [
+                        4,
+                        8
+                    ],
+                    "factor": 1
+                }
+
+            ]
+            
+        },
+
+        {
+            "topic": "power/data",
+            "canid": "0x93",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "HPpump",
+                    "type": "uint8_t",
+                    "place": [
+                        0,
+                        1
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "PCpump",
+                    "type": "uint8_t",
+                    "place": [
+                        1,
+                        2
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "Power1",
+                    "type": "uint8_t",
+                    "place": [
+                        2,
+                        3
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "Power2",
+                    "type": "uint8_t",
+                    "place": [
+                        3,
+                        4
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        },
+        {
+            "topic": "flowmeter/data",
+            "canid": "0xA3",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "Pressure",
+                    "type": "float",
+                    "place": [
+                        0,
+                        4
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "Flow",
+                    "type": "float",
+                    "place": [
+                        4,
+                        8
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        },
+        {
+            "topic": "hookload/data",
+            "canid": "0x43",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "unfilterd",
+                    "type": "float",
+                    "place": [
+                        0,
+                        4
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "filterd",
+                    "type": "float",
+                    "place": [
+                        4,
+                        8
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        }
+    ],
+    "mqtt2can": [
+        {
+            "topic": "motor/set",
+            "canid": "0x62",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "max torque",
+                    "type": "int16_t",
+                    "place": [
+                        0,
+                        2
+                    ],
+                    "factor": 600
+                },
+                {
+                    "key": "soft torque",
+                    "type": "int16_t",
+                    "place": [
+                        2,
+                        4
+                    ],
+                    "factor": 600
+                },
+                {
+                    "key": "rpm",
+                    "type": "int16_t",
+                    "place": [
+                        4,
+                        6
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        },
+        {
+            "topic": "motor/power",
+            "canid": "0x64",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "power",
+                    "type": "uint8_t",
+                    "place": [
+                        0,
+                        1
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        },        
+        {
+            "topic": "zachse/homing",
+            "canid": "0x74",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "position after homing",
+                    "type": "int32_t",
+                    "place": [
+                        0,
+                        4
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        },
+        {
+            "topic": "zachse/movex",
+            "canid": "0x75",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "steps",
+                    "type": "int32_t",
+                    "place": [
+                        0,
+                        4
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "speed",
+                    "type": "uint16_t",
+                    "place": [
+                        4,
+                        6
+                    ],
+                    "factor": 1
+                }
+
+            ]
+            
+        },
+        {
+            "topic": "zachse/moveto",
+            "canid": "0x76",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "steps",
+                    "type": "int32_t",
+                    "place": [
+                        0,
+                        4
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "speed",
+                    "type": "uint16_t",
+                    "place": [
+                        4,
+                        6
+                    ],
+                    "factor": 1
+                }
+
+            ]
+            
+        },
+        {
+            "topic": "power/write",
+            "canid": "0x92",
+            "length": 8,
+            "payload": [
+                {
+                    "key": "HPpump",
+                    "type": "uint8_t",
+                    "place": [
+                        0,
+                        1
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "PCpump",
+                    "type": "uint8_t",
+                    "place": [
+                        1,
+                        2
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "Power1",
+                    "type": "uint8_t",
+                    "place": [
+                        2,
+                        3
+                    ],
+                    "factor": 1
+                },
+                {
+                    "key": "Power2",
+                    "type": "uint8_t",
+                    "place": [
+                        3,
+                        4
+                    ],
+                    "factor": 1
+                }
+            ]
+            
+        }
+
+    ]
+}
