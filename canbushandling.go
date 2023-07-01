@@ -1,6 +1,6 @@
 // Package can2mqtt contains some tools for bridging a CAN-Interface
 // and a mqtt-network
-package can2mqtt_json
+package can2mqtt_json_legacy
 
 import (
 	"fmt"

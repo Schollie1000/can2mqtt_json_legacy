@@ -5,7 +5,7 @@ import (
 	"fmt" // print
 	"os"  // args
 
-	C2M "github.com/Schollie1000/can2mqtt_json"
+	C2M "github.com/Schollie1000/can2mqtt_json_legacy"
 )
 
 // Parses commandline arguments

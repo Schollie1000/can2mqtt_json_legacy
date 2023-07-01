@@ -1,4 +1,4 @@
-package can2mqtt_json
+package can2mqtt_json_legacy
 
 import (
 	//"bufio"        // Reader
