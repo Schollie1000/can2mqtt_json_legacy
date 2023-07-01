@@ -1,5 +1,4 @@
-module github.com/Schollie1000/can2mqtt_json
-
+module github.com/Schollie1000/can2mqtt_json_legacy
 go 1.19
 
 require (
