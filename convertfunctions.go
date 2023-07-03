@@ -86,10 +86,7 @@ func convert2MQTT(id int, length int, payload [8]byte) mqtt_response {
 			unixf := float64(unix)
 			msf := float64(ms) / 1000
 			//valstring = fmt.Sprintf("%d.%d", unix, ms)
-			unix := (uint32(payload[0]) << 24) | (uint32(payload[1]) << 16) | (uint32(payload[2]) << 8) | uint32(payload[3])
-			ms := (uint32(payload[4]) << 24) | (uint32(payload[5]) << 16) | (uint32(payload[6]) << 8) | uint32(payload[7])
-			unixf := float64(unix)
-			msf := float64(ms) / 1000
+			
 
 			valstring = fmt.Sprintf("%g", float64(unixf+msf))
 			last_clock = valstring
