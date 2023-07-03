@@ -68,248 +68,145 @@ func getPayloadconv(config *Config, id string, mode string) (*Payload, string) {
 	errorPay.Fields = append(errorPay.Fields, errorField)
 	return &errorPay, ""
 }
+
+
 func convert2MQTT(id int, length int, payload [8]byte) mqtt_response {
 	idStr := fmt.Sprintf("0x%X", id)
 	fmt.Printf("id = %s\n", idStr)
 	conv, topic := getPayloadconv(&config, idStr, "can2mqtt")
-	retstr := strings.Builder{}
-	retstr.WriteString("{")
-	var valstring string
+	retstr := "{"	
+	var valstring string 
 	for _, field := range conv.Fields {
 		valstring = ""
-		switch field.Type {
-		case "error":
+		if field.Type == "error" {
 			valstring = "error"
-		case "unixtime":
-			unix := binary.LittleEndian.Uint32(payload[0:4])
-			ms := binary.LittleEndian.Uint32(payload[4:8])
+		} else if field.Type == "unixtime" {
+			
+			unix := uint32(payload[0]) | uint32(payload[1])<<8 | uint32(payload[2])<<16 | uint32(payload[3])<<24
+			ms := uint32(payload[4]) | uint32(payload[5])<<8 | uint32(payload[6])<<16 | uint32(payload[7])<<24
 			unixf := float64(unix)
 			msf := float64(ms) / 1000
-			valstring = strconv.FormatFloat(float64(unixf+msf), 'g', -1, 64)
+			//valstring = fmt.Sprintf("%d.%d", unix, ms)
+			
+
+			valstring = fmt.Sprintf("%g", float64(unixf+msf))
 			last_clock = valstring
-		case "byte":
+		} else if field.Type == "byte" {
 			sub := payload[field.Place[0]:field.Place[1]]
 			if dbg {
 				fmt.Printf("byte detected ")
 				fmt.Printf(" sub  %x \n", sub)
 			}
 			valstring = string(sub)
-		case "int8_t":
-			sub := payload[field.Place[0]]
+
+		} else if field.Type == "int8_t" {
 			if dbg {
 				fmt.Printf("int 8 detected ")
+			}
+			sub := payload[field.Place[0]]
+			if dbg {
 				fmt.Printf(" sub  %x \n", sub)
 			}
 			data2 := int8(sub)
 			tmpf := field.Factor * float64(data2)
 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-		case "uint8_t":
-			sub := payload[field.Place[0]]
+
+		} else if field.Type == "uint8_t" {
 			if dbg {
 				fmt.Printf("uint 8 detected ")
+			}
+			sub := payload[field.Place[0]]
+			if dbg {
 				fmt.Printf(" sub  %x \n", sub)
 			}
 			data2 := sub
 			tmpf := field.Factor * float64(data2)
 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-		case "int16_t":
-			sub := payload[field.Place[0]:field.Place[1]]
+
+		} else if field.Type == "int16_t" {
 			if dbg {
 				fmt.Printf("int 16 detected ")
+			}
+			sub := payload[field.Place[0]:field.Place[1]]
+			if dbg {
 				fmt.Printf(" sub  %x %x \n", sub[0], sub[1])
 			}
-			data2 := int16(binary.LittleEndian.Uint16(sub))
+			data2 := int16(sub[0]) | int16(sub[1])<<8
+
 			tmpf := field.Factor * float64(data2)
+
 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-		case "uint16_t":
-			sub := payload[field.Place[0]:field.Place[1]]
+
+		} else if field.Type == "uint16_t" {
 			if dbg {
 				fmt.Printf("uint 16 detected ")
+			}
+			sub := payload[field.Place[0]:field.Place[1]]
+			if dbg {
 				fmt.Printf(" sub  %x %x \n", sub[0], sub[1])
 			}
-			data2 := binary.LittleEndian.Uint16(sub)
+			data2 := uint16(sub[0]) | uint16(sub[1])<<8
+
 			tmpf := field.Factor * float64(data2)
+
 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-		case "int32_t":
-			sub := payload[field.Place[0]:field.Place[1]]
+
+		} else if field.Type == "int32_t" {
 			if dbg {
 				fmt.Printf("int 32 detected ")
+			}
+			sub := payload[field.Place[0]:field.Place[1]]
+			if dbg {
 				fmt.Printf(" sub  %x %x %x %x\n", sub[0], sub[1], sub[2], sub[3])
 			}
-			data2 := int32(binary.LittleEndian.Uint32(sub))
+			data2 := int32(sub[3]) | int32(sub[2])<<8 | int32(sub[1])<<16 | int32(sub[0])<<24
+
 			tmpf := field.Factor * float64(data2)
+
 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-		case "uint32_t":
-			sub := payload[field.Place[0]:field.Place[1]]
+
+		} else if field.Type == "uint32_t" {
 			if dbg {
 				fmt.Printf("uint 32 detected ")
-				fmt.Printf(" sub  %x %x %x %x\n", sub[0], sub[1], sub[2], sub[3])
 			}
-			data2 := binary.LittleEndian.Uint32(sub)
-			tmpf := field.Factor * float64(data2)
-			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-		case "float":
 			sub := payload[field.Place[0]:field.Place[1]]
 			if dbg {
-				fmt.Printf("float 32 detected ")
 				fmt.Printf(" sub  %x %x %x %x\n", sub[0], sub[1], sub[2], sub[3])
 			}
-			data3 := binary.LittleEndian.Uint32(sub)
+			data2 := uint32(sub[3]) | uint32(sub[2])<<8 | uint32(sub[1])<<16 | uint32(sub[0])<<24
+
+			tmpf := field.Factor * float64(data2)
+
+			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
+		} else if field.Type == "float" {
+			if dbg {
+				fmt.Printf("float 32 detected ")
+			}
+			sub := payload[field.Place[0]:field.Place[1]]
+			if dbg {
+				fmt.Printf(" sub  %x %x %x %x\n", sub[0], sub[1], sub[2], sub[3])
+			}
+			data3 := uint32(sub[0]) | uint32(sub[1])<<8 | uint32(sub[2])<<16 | uint32(sub[3])<<24
 			data2 := math.Float32frombits(data3)
 			tmpf := field.Factor * float64(data2)
+
 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
 		}
-		retstr.WriteString(`"` + field.Key + `" : ` + valstring + ", ")
+
+		retstr = retstr + "\"" + field.Key + "\" : " + valstring + ", "
 	}
 	if topic != "clock" {
-		retstr.WriteString(`"unixtime" : ` + last_clock)
+		retstr = retstr + "\"unixtime\" : " + last_clock
 	}
-	finalStr := retstr.String()
-	finalStr = strings.TrimSuffix(finalStr, ", ")
-	finalStr += "}"
+	if strings.HasSuffix(retstr, ", ") {
+		retstr = strings.TrimRight(retstr, ", ")
+	}
+	retstr = retstr + "}"
 	res := mqtt_response{}
 	res.Topic = topic
-	res.Payload = finalStr
+	res.Payload = retstr
 	return res
 }
-
-// func convert2MQTT(id int, length int, payload [8]byte) mqtt_response {
-// 	idStr := fmt.Sprintf("0x%X", id)
-// 	fmt.Printf("id = %s\n", idStr)
-// 	conv, topic := getPayloadconv(&config, idStr, "can2mqtt")
-// 	retstr := "{"	
-// 	var valstring string 
-// 	for _, field := range conv.Fields {
-// 		valstring = ""
-// 		if field.Type == "error" {
-// 			valstring = "error"
-// 		} else if field.Type == "unixtime" {
-			
-// 			unix := uint32(payload[0]) | uint32(payload[1])<<8 | uint32(payload[2])<<16 | uint32(payload[3])<<24
-// 			ms := uint32(payload[4]) | uint32(payload[5])<<8 | uint32(payload[6])<<16 | uint32(payload[7])<<24
-// 			unixf := float64(unix)
-// 			msf := float64(ms) / 1000
-// 			//valstring = fmt.Sprintf("%d.%d", unix, ms)
-			
-
-// 			valstring = fmt.Sprintf("%g", float64(unixf+msf))
-// 			last_clock = valstring
-// 		} else if field.Type == "byte" {
-// 			sub := payload[field.Place[0]:field.Place[1]]
-// 			if dbg {
-// 				fmt.Printf("byte detected ")
-// 				fmt.Printf(" sub  %x \n", sub)
-// 			}
-// 			valstring = string(sub)
-
-// 		} else if field.Type == "int8_t" {
-// 			if dbg {
-// 				fmt.Printf("int 8 detected ")
-// 			}
-// 			sub := payload[field.Place[0]]
-// 			if dbg {
-// 				fmt.Printf(" sub  %x \n", sub)
-// 			}
-// 			data2 := int8(sub)
-// 			tmpf := field.Factor * float64(data2)
-// 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-
-// 		} else if field.Type == "uint8_t" {
-// 			if dbg {
-// 				fmt.Printf("uint 8 detected ")
-// 			}
-// 			sub := payload[field.Place[0]]
-// 			if dbg {
-// 				fmt.Printf(" sub  %x \n", sub)
-// 			}
-// 			data2 := sub
-// 			tmpf := field.Factor * float64(data2)
-// 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-
-// 		} else if field.Type == "int16_t" {
-// 			if dbg {
-// 				fmt.Printf("int 16 detected ")
-// 			}
-// 			sub := payload[field.Place[0]:field.Place[1]]
-// 			if dbg {
-// 				fmt.Printf(" sub  %x %x \n", sub[0], sub[1])
-// 			}
-// 			data2 := int16(sub[0]) | int16(sub[1])<<8
-
-// 			tmpf := field.Factor * float64(data2)
-
-// 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-
-// 		} else if field.Type == "uint16_t" {
-// 			if dbg {
-// 				fmt.Printf("uint 16 detected ")
-// 			}
-// 			sub := payload[field.Place[0]:field.Place[1]]
-// 			if dbg {
-// 				fmt.Printf(" sub  %x %x \n", sub[0], sub[1])
-// 			}
-// 			data2 := uint16(sub[0]) | uint16(sub[1])<<8
-
-// 			tmpf := field.Factor * float64(data2)
-
-// 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-
-// 		} else if field.Type == "int32_t" {
-// 			if dbg {
-// 				fmt.Printf("int 32 detected ")
-// 			}
-// 			sub := payload[field.Place[0]:field.Place[1]]
-// 			if dbg {
-// 				fmt.Printf(" sub  %x %x %x %x\n", sub[0], sub[1], sub[2], sub[3])
-// 			}
-// 			data2 := int32(sub[3]) | int32(sub[2])<<8 | int32(sub[1])<<16 | int32(sub[0])<<24
-
-// 			tmpf := field.Factor * float64(data2)
-
-// 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-
-// 		} else if field.Type == "uint32_t" {
-// 			if dbg {
-// 				fmt.Printf("uint 32 detected ")
-// 			}
-// 			sub := payload[field.Place[0]:field.Place[1]]
-// 			if dbg {
-// 				fmt.Printf(" sub  %x %x %x %x\n", sub[0], sub[1], sub[2], sub[3])
-// 			}
-// 			data2 := uint32(sub[3]) | uint32(sub[2])<<8 | uint32(sub[1])<<16 | uint32(sub[0])<<24
-
-// 			tmpf := field.Factor * float64(data2)
-
-// 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-// 		} else if field.Type == "float" {
-// 			if dbg {
-// 				fmt.Printf("float 32 detected ")
-// 			}
-// 			sub := payload[field.Place[0]:field.Place[1]]
-// 			if dbg {
-// 				fmt.Printf(" sub  %x %x %x %x\n", sub[0], sub[1], sub[2], sub[3])
-// 			}
-// 			data3 := uint32(sub[0]) | uint32(sub[1])<<8 | uint32(sub[2])<<16 | uint32(sub[3])<<24
-// 			data2 := math.Float32frombits(data3)
-// 			tmpf := field.Factor * float64(data2)
-
-// 			valstring = strconv.FormatFloat(tmpf, 'f', 5, 32)
-// 		}
-
-// 		retstr = retstr + "\"" + field.Key + "\" : " + valstring + ", "
-// 	}
-// 	if topic != "clock" {
-// 		retstr = retstr + "\"unixtime\" : " + last_clock
-// 	}
-// 	if strings.HasSuffix(retstr, ", ") {
-// 		retstr = strings.TrimRight(retstr, ", ")
-// 	}
-// 	retstr = retstr + "}"
-// 	res := mqtt_response{}
-// 	res.Topic = topic
-// 	res.Payload = retstr
-// 	return res
-// }
 
 // func convert2CAN(topic, payload string) CAN.CANFrame {
 func convert2CAN(topic, payload string) can.Frame {
