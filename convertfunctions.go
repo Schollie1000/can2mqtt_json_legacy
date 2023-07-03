@@ -73,19 +73,25 @@ func convert2MQTT(id int, length int, payload [8]byte) mqtt_response {
 	idStr := fmt.Sprintf("0x%X", id)
 	fmt.Printf("id = %s\n", idStr)
 	conv, topic := getPayloadconv(&config, idStr, "can2mqtt")
-	retstr := "{"
-	var valstring string
+	retstr := "{"	
+	var valstring string 
 	for _, field := range conv.Fields {
 		valstring = ""
 		if field.Type == "error" {
 			valstring = "error"
 		} else if field.Type == "unixtime" {
+			
 			unix := uint32(payload[0]) | uint32(payload[1])<<8 | uint32(payload[2])<<16 | uint32(payload[3])<<24
 			ms := uint32(payload[4]) | uint32(payload[5])<<8 | uint32(payload[6])<<16 | uint32(payload[7])<<24
 			unixf := float64(unix)
-			msf := float64(ms )/ 1000
+			msf := float64(ms) / 1000
 			//valstring = fmt.Sprintf("%d.%d", unix, ms)
-			valstring = fmt.Sprintf("%f", float64(unixf+msf))
+			unix := (uint32(payload[0]) << 24) | (uint32(payload[1]) << 16) | (uint32(payload[2]) << 8) | uint32(payload[3])
+			ms := (uint32(payload[4]) << 24) | (uint32(payload[5]) << 16) | (uint32(payload[6]) << 8) | uint32(payload[7])
+			unixf := float64(unix)
+			msf := float64(ms) / 1000
+
+			valstring = fmt.Sprintf("%g", float64(unixf+msf))
 			last_clock = valstring
 		} else if field.Type == "byte" {
 			sub := payload[field.Place[0]:field.Place[1]]
