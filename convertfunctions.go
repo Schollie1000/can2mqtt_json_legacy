@@ -82,9 +82,10 @@ func convert2MQTT(id int, length int, payload [8]byte) mqtt_response {
 		} else if field.Type == "unixtime" {
 			unix := uint32(payload[0]) | uint32(payload[1])<<8 | uint32(payload[2])<<16 | uint32(payload[3])<<24
 			ms := uint32(payload[4]) | uint32(payload[5])<<8 | uint32(payload[6])<<16 | uint32(payload[7])<<24
-			valstring = fmt.Sprintf("%f", float64(unix +  ms/1000))
-			// valstring = fmt.Sprintf("%d.%d", unix, ms)
-			
+			unixf := float64(unix)
+			msf := float64(ms / 1000)
+			//valstring = fmt.Sprintf("%d.%d", unix, ms)
+			valstring = fmt.Sprintf("%f", float64(unixf+msf))
 			last_clock = valstring
 		} else if field.Type == "byte" {
 			sub := payload[field.Place[0]:field.Place[1]]
