@@ -72,7 +72,6 @@ func getPayloadconv(config *Config, id string, mode string) (*Payload, string) {
 
 func convert2MQTT(id int, length int, payload [8]byte) mqtt_response {
 	idStr := fmt.Sprintf("0x%X", id)
-	var last_clock = "0"
 	fmt.Printf("id = %s\n", idStr)
 	conv, topic := getPayloadconv(&config, idStr, "can2mqtt")
 	retstr := "{"	
@@ -91,7 +90,7 @@ func convert2MQTT(id int, length int, payload [8]byte) mqtt_response {
 			
 
 			valstring = fmt.Sprintf("%g", float64(unixf+msf))
-			last_clock = valstring 
+			last_clock = valstring
 		} else if field.Type == "byte" {
 			sub := payload[field.Place[0]:field.Place[1]]
 			if dbg {
