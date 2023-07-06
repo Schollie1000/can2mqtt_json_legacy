@@ -74,7 +74,7 @@ type mqtt_response struct {
 }
 
 var config Config     // all config inside
-var last_clock string ="000"// the last timestamp from dataquerry
+var last_clock string=`00` // the last timestamp from dataquerry
 
 // var pairFromID map[int]*can2mqtt       // c2m pair (lookup from ID)
 // var pairFromTopic map[string]*can2mqtt // c2m pair (lookup from Topic)
