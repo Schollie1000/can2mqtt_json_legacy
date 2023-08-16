@@ -29,7 +29,7 @@ func getPayloadconv(config *Config, id string, mode string) (*Payload, string) {
 
 	for _, conversion := range tmode {
 		if mode == "can2mqtt" {
-			id_compare := conversion.CanID
+			id_compare = conversion.CanID
 		} else {
 			id_compare = conversion.Topic
 		}
